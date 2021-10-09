@@ -22,12 +22,12 @@ def build_path(*path_elements):
     return path.abspath(path.expanduser(path.join(*path_elements)))
 
 
-def merge(directory, r, g, b, a='', out='merged.png'):
+def merge(r, g, b, a='', path='', out='merged.png'):
     """
     Merge three (or four) png images into one using their r/g/b(/a) channels.
 
-    :param directory: Directory where input and output figures are to be found.
-    :type directory: str
+    :param path: Directory where input and output figures are to be found.
+    :type path: str
     :param r: file name of .png file holding the red channel for desired merge
     :type r: str
     :param g: file name of .png file holding the green channel for desired merge
@@ -41,17 +41,17 @@ def merge(directory, r, g, b, a='', out='merged.png'):
     :return: None
     :rtype: None
     """
-    o = build_path(directory, out)
-    r = Image.open(build_path(directory, r)).getchannel(0)
-    g = Image.open(build_path(directory, g)).getchannel(1)
-    b = Image.open(build_path(directory, b)).getchannel(2)
+    o = build_path(path, out)
+    r = Image.open(build_path(path, r)).convert('RGBA').getchannel(0)
+    g = Image.open(build_path(path, g)).convert('RGBA').getchannel(1)
+    b = Image.open(build_path(path, b)).convert('RGBA').getchannel(2)
     if a is not '':
-        a = Image.open(build_path(directory, a)).getchannel(3)
+        a = Image.open(build_path(path, a)).convert('RGBA').getchannel(3)
         Image.merge('RGBA', (r, g, b, a)).save(o, 'PNG')
     else:
         Image.merge('RGB', (r, g, b)).save(o, 'PNG')
 
 
 if __name__ == '__main__':
-    n = 'CpltMap_Mo35a{}_Pm-3_gnu.png'
-    merge('~', r=n.format('X'), g=n.format('Y'), b=n.format('Z'), out=n)
+    n = 'example{}.png'
+    merge(n.format('_r'), n.format('_g'), n.format('_b'))
